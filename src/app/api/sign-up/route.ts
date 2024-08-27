@@ -2,19 +2,21 @@ import { NextResponse } from "next/server";
 import connectToDB from "@/database";
 import User from "@/models/User";
 import Joi from "joi";
-import bcrypt from "bcryptjs";
+// import bcrypt from 'bcryptjs'; // Uncomment if you use bcrypt for password hashing
 
-const SignInSchema = Joi.object({
+const SignUpSchema = Joi.object({
+  name: Joi.string().required(),
   email: Joi.string().email().required(),
   password: Joi.string().min(6).required(),
 });
 
-export const POST = async (req) => {
+// Correctly type the `req` parameter
+export const POST = async (req: Request) => {
   try {
     await connectToDB();
-    const signInData = await req.json();
+    const userData = await req.json();
 
-    const { error } = SignInSchema.validate(signInData);
+    const { error } = SignUpSchema.validate(userData);
     if (error) {
       return NextResponse.json(
         {
@@ -25,44 +27,39 @@ export const POST = async (req) => {
       );
     }
 
-    const user = await User.findOne({ email: signInData.email });
-    if (!user) {
+    const existingUser = await User.findOne({ email: userData.email });
+    if (existingUser) {
       return NextResponse.json(
         {
           success: false,
-          message: "Invalid email or password",
+          message: "Email already in use",
         },
-        { status: 401 }
+        { status: 409 }
       );
     }
 
-    // Compare provided password with the hashed password in the database
-    const isMatch = await bcrypt.compare(signInData.password, user.password);
-    if (!isMatch) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Invalid email or password",
-        },
-        { status: 401 }
-      );
-    }
+    // Hash the password before saving (uncomment if using bcrypt)
+    // const hashedPassword = await bcrypt.hash(userData.password, 10);
+    // const newUser = new User({ ...userData, password: hashedPassword });
+
+    const newUser = new User(userData);
+    await newUser.save();
 
     // Prepare the response with user data
     const userResponse = {
-      id: user._id,
-      name: user.name,
-      email: user.email,
+      id: newUser._id,
+      name: newUser.name,
+      email: newUser.email,
       // Add any other fields you need
     };
 
     return NextResponse.json(
       {
         success: true,
-        message: "User signed in successfully",
+        message: "User registered successfully",
         user: userResponse,
       },
-      { status: 200 }
+      { status: 201 }
     );
   } catch (error) {
     console.error(error);
@@ -76,4 +73,3 @@ export const POST = async (req) => {
   }
 };
 
-export default POST;

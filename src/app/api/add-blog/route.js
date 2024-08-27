@@ -1,20 +1,23 @@
-// api/add-blog/route.js
 import Joi from "joi";
 import { NextResponse } from "next/server";
 import connectToDB from "@/database";
 import Blog from "@/models/Blog";
+import { NextRequest } from "next/server";
 
+// Define the schema for validation
 const AddNewBlogSchema = Joi.object({
   title: Joi.string().required(),
   description: Joi.string().required(),
-  user: Joi.string().required(), // Add this field to accept user ID
+  user: Joi.string().required(), // User ID field
 });
 
+// POST request handler with proper typing
 export const POST = async (req) => {
   try {
     await connectToDB();
     const extractBlogData = await req.json();
 
+    // Validate request data
     const { error } = AddNewBlogSchema.validate(extractBlogData);
     if (error) {
       return NextResponse.json(
@@ -26,6 +29,7 @@ export const POST = async (req) => {
       );
     }
 
+    // Create a new blog entry
     const newlyCreatedBlogItem = await Blog.create(extractBlogData);
 
     if (newlyCreatedBlogItem) {
@@ -56,5 +60,3 @@ export const POST = async (req) => {
     );
   }
 };
-
-export default POST;

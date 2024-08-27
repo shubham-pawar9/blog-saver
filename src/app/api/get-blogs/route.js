@@ -40,5 +40,3 @@ export const GET = async (req) => {
     );
   }
 };
-
-export default GET;
