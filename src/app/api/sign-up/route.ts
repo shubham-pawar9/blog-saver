@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import connectToDB from "@/database";
-import User from "@/models/User";
+import User from "../../../models/User";
 import Joi from "joi";
 // import bcrypt from 'bcryptjs'; // Uncomment if you use bcrypt for password hashing
 

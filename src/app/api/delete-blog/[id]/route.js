@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import connectToDB from "@/database";
-import Blog from "@/models/Blog";
+import Blog from "../../../../models/Blog";
 
 export async function DELETE(req, { params }) {
   const { id } = params; // <-- Extracting 'id' from the params in the dynamic route
