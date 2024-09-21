@@ -2,7 +2,7 @@
 
 import { Typography } from "@mui/material";
 import BlogCard from "../card";
-const BlogList = ({ blogs, blogLoading, error }) => {
+const BlogList = ({ blogs, blogLoading, error, setBlogRefresh }) => {
   return (
     <div
       className="blog-list-box"
@@ -19,7 +19,7 @@ const BlogList = ({ blogs, blogLoading, error }) => {
       {error && <p>Error: {error}</p>} {/* Show error message */}
       {blogs.length > 0 ? ( // Check if blogs are fetched
         <>
-          <BlogCard blogs={blogs} />
+          <BlogCard blogs={blogs} setBlogRefresh={setBlogRefresh} />
         </>
       ) : (
         <Typography>No Blogs Available</Typography>

@@ -2,7 +2,6 @@ import Joi from "joi";
 import { NextResponse } from "next/server";
 import connectToDB from "@/database";
 import Blog from "@/models/Blog";
-import { NextRequest } from "next/server";
 
 // Define the schema for validation
 const AddNewBlogSchema = Joi.object({

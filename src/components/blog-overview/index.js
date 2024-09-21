@@ -5,6 +5,7 @@ import AddNewBlog from "../add-new-blog";
 import BlogList from "../blog-list";
 import { toast } from "sonner";
 import Navbar from "@/components/navbar";
+import { CircularProgress } from "@mui/material";
 const initialBlogData = {
   title: "",
   description: "",
@@ -13,6 +14,10 @@ const BlogOverview = ({ userId }) => {
   const [openBlogDialog, setOpenBlogDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [blogFormData, setBlogFormData] = useState(initialBlogData);
+  const [blogs, setBlogs] = useState([]); // State to store fetched blogs
+  const [blogLoading, setBlogLoading] = useState(false); // State to handle loading
+  const [error, setError] = useState(null); // State to handle errors
+  const [blogRefresh, setBlogRefresh] = useState(false);
   //   console.log(blogFormData);
 
   const formatDate = (date) => {
@@ -26,6 +31,7 @@ const BlogOverview = ({ userId }) => {
     return new Date(date).toLocaleDateString("en-GB", options);
   };
   const handleSaveBlogData = async () => {
+    setLoading(true);
     try {
       const user = JSON.parse(localStorage.getItem("user"));
 
@@ -70,10 +76,6 @@ const BlogOverview = ({ userId }) => {
     }
   };
 
-  const [blogs, setBlogs] = useState([]); // State to store fetched blogs
-  const [blogLoading, setBlogLoading] = useState(false); // State to handle loading
-  const [error, setError] = useState(null); // State to handle errors
-
   // Function to fetch blogs
   const fetchBlogs = async () => {
     setBlogLoading(true);
@@ -101,10 +103,26 @@ const BlogOverview = ({ userId }) => {
   // Fetch blogs on component mount
   useEffect(() => {
     fetchBlogs();
-  }, []); // Empty dependency array means this useEffect runs only on mount
+  }, [blogRefresh]);
+
+  if (blogLoading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100vh",
+        }}
+      >
+        <CircularProgress />
+      </div>
+    );
+  }
   return (
     <>
       <Navbar />
+
       <div
         classname="blog-mainBox"
         style={{
@@ -114,7 +132,12 @@ const BlogOverview = ({ userId }) => {
           justifyContent: "flex-end",
         }}
       >
-        <BlogList blogs={blogs} blogLoading={blogLoading} error={error} />
+        <BlogList
+          blogs={blogs}
+          blogLoading={blogLoading}
+          error={error}
+          setBlogRefresh={setBlogRefresh}
+        />
         <AddNewBlog
           openBlogDialog={openBlogDialog}
           setOpenBlogDialog={setOpenBlogDialog}

@@ -5,7 +5,12 @@ import {
   CardContent,
   Typography,
 } from "@mui/material";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 
+import { useState } from "react";
+import { toast } from "sonner";
 const formatDate = (date) => {
   const options = {
     day: "2-digit",
@@ -17,7 +22,29 @@ const formatDate = (date) => {
   return new Date(date).toLocaleDateString("en-GB", options);
 };
 
-const BlogCard = ({ blogs }) => {
+const BlogCard = ({ blogs, setBlogRefresh }) => {
+  const handleDelete = async (id) => {
+    try {
+      const response = await fetch(`/api/delete-blog/${id}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        console.log("Blog deleted successfully");
+        setBlogRefresh((prev) => !prev);
+        toast("Blog deleted successfully", {});
+      } else {
+        console.error(result.message);
+        toast(result.message, {});
+      }
+    } catch (error) {
+      console.error("Error deleting blog:", error);
+      toast(error.message, {});
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -39,6 +66,19 @@ const BlogCard = ({ blogs }) => {
             position: "relative",
           }}
         >
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              gap: "4px",
+              marginTop: "4px",
+            }}
+          >
+            <DeleteIcon
+              sx={{ cursor: "pointer" }}
+              onClick={() => handleDelete(item._id)}
+            />
+          </Box>
           <CardActionArea sx={{ position: "revert" }}>
             <Typography
               sx={{ position: "absolute", right: "10px", bottom: "10px" }}

@@ -1,17 +1,24 @@
 import mongoose from "mongoose";
 
 const connectToDB = async () => {
-  const connectionUrl =
-    "mongodb+srv://developershubhampawar:6MQhnU9UDPyfSplK@blogs.enmq5lp.mongodb.net/";
-  try {
-    await mongoose.connect(connectionUrl, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log("Database connection successful");
-  } catch (error) {
-    console.error("Database connection error:", error);
+  if (mongoose.connection.readyState >= 1) {
+    return;
   }
+
+  mongoose.connect(
+    "mongodb+srv://developershubhampawar:6MQhnU9UDPyfSplK@blogs.enmq5lp.mongodb.net/",
+    {
+      // remove useNewUrlParser and useUnifiedTopology
+    }
+  );
+
+  mongoose.connection.on("connected", () => {
+    console.log("Database connection successful");
+  });
+
+  mongoose.connection.on("error", (err) => {
+    console.log(`Database connection error: ${err}`);
+  });
 };
 
 export default connectToDB;
