@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import Joi from "joi";
 import { NextResponse } from "next/server";
 import connectToDB from "@/database";

@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { NextResponse } from "next/server";
 import connectToDB from "@/database";
 import Blog from "../../../models/Blog"; // Ensure this import points to your Blog model
